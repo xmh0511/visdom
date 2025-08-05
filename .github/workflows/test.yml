@@ -24,7 +24,7 @@ jobs:
       - name: Install Rust stable toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Install grcov
-        run: curl -L https://github.com/mozilla/grcov/releases/download/v0.8.2/grcov-linux-x86_64.tar.bz2 | tar jxf -
+        run: cargo install grcov
       - name: Build and test with coverage instrumentation
         run: |
           export CARGO_INCREMENTAL=0
@@ -32,7 +32,6 @@ jobs:
           export LLVM_PROFILE_FILE="cargo-test-%p-%m.profraw"
           cargo build --features full --verbose $CARGO_OPTIONS
           cargo test --features full --verbose $CARGO_OPTIONS
-          # 合并 profraw 文件为 lcov.info
           mkdir coverage
           grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o coverage/lcov.info
           bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
