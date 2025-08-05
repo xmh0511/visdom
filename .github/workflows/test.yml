@@ -1,47 +1,39 @@
 name: test
 on:
-  - push
+  push:
+
 jobs:
-  # Task test
+  # 单元测试任务
   test:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      # Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v3
-      # Install toolchain
-      - name: Install toolchain
+      - name: Install Rust stable toolchain
         uses: dtolnay/rust-toolchain@stable
-      # build coverage
       - name: Run unit tests
         run: cargo test --features full
-  # Task coverage
+
+  # 覆盖率任务（只在 ubuntu + nightly 下，且用 nightly 才能用 -Zprofile）
   coverage:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
-      # Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v3
-      # Install toolchain
-      - name: Install toolchain
+      - name: Install Rust nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
-      # Install grcov
       - name: Install grcov
         run: curl -L https://github.com/mozilla/grcov/releases/download/v0.8.2/grcov-linux-x86_64.tar.bz2 | tar jxf -
-      # Run coverage
-      - name: Build coverage
+      - name: Build and test with nightly for coverage
         run: |
           export CARGO_INCREMENTAL=0
           export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
           export RUSTDOCFLAGS="-Cpanic=abort"
-          cargo build --features full --verbose $CARGO_OPTIONS
-          cargo test --features full --verbose $CARGO_OPTIONS
-          zip -0 ccov.zip `find . \( -name "visdom*.gc*" \) -print`;
-          ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info;
-          bash <(curl -s https://codecov.io/bash) -f lcov.info;
+          cargo +nightly build --features full --verbose $CARGO_OPTIONS
+          cargo +nightly test --features full --verbose $CARGO_OPTIONS
+          zip -0 ccov.zip `find . \( -name "visdom*.gc*" \) -print`
+          ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info
+          bash <(curl -s https://codecov.io/bash) -f lcov.info
