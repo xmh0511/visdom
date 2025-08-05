@@ -325,7 +325,7 @@ fn main() -> Result<(), BoxDynError> {
 	let child_nodes = root.get(0).unwrap().child_nodes();
 	println!("{}", child_nodes[1].text_content());
 	println!("{}", content.html());
-  #[allow(unused_mut)]
+	#[allow(unused_mut)]
 	let mut test_clone = root.find("#test_clone");
 	println!("test_clone:{:?}", test_clone.html());
 	#[cfg(any(feature = "insertion", feature = "destroy"))]
