@@ -18,8 +18,9 @@ pub fn init(rules: &mut Vec<RuleItem>) {
 				.get("2")
 				.or_else(|| value_data.get("3"))
 				.or_else(|| value_data.get("4"))
-				.map(|s| s.clone());
+				.cloned();
 			let match_mode = value_data.get("1").unwrap_or(&def_mode);
+			#[allow(clippy::type_complexity)]
 			let handle: Box<dyn Fn(&Option<IAttrValue>) -> bool> = if let Some(attr_value) = attr_value {
 				let match_mode = match_mode.as_str();
 				if attr_value.is_empty() && !matches!(match_mode, "" | "!" | "|") {
@@ -48,7 +49,7 @@ pub fn init(rules: &mut Vec<RuleItem>) {
 								if *v == attr_value {
 									return true;
 								}
-								let attr_value: String = format!("{}-", attr_value);
+								let attr_value: String = format!("{attr_value}-");
 								v.starts_with(&attr_value)
 							}
 							_ => attr_value.is_empty(),

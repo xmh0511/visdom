@@ -65,7 +65,7 @@ pub trait INodeTrait {
 	}
 	// text
 	fn text_content(&self) -> String {
-		return self.text_contents().iter().collect::<String>();
+		self.text_contents().iter().collect::<String>()
 	}
 	fn text(&self) -> String {
 		self.text_content()
@@ -87,7 +87,7 @@ mod tests {
 	#[test]
 	fn test_inode_type() {
 		let element_type = INodeType::Element;
-		assert!(format!("{:?}", element_type).contains("Element"));
+		assert!(format!("{element_type:?}").contains("Element"));
 		assert!(element_type.is_element());
 	}
 }

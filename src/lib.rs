@@ -81,13 +81,13 @@ impl Dom {
 				Dom::halt(
 					dom,
 					method,
-					&format!("Can't {} for a {:?} type", method, my_node_type),
+					&format!("Can't {method} for a {my_node_type:?} type"),
 				);
 				return false;
 			}
 			// document
 			if let INodeType::Document = node.node_type() {
-				Dom::halt(dom, method, &format!("Can't {} a document type", method));
+				Dom::halt(dom, method, &format!("Can't {method} a document type"));
 				return false;
 			}
 			// test if same node
@@ -95,7 +95,7 @@ impl Dom {
 				Dom::halt(
 					dom,
 					method,
-					&format!("Can't {} a dom that contains itself.", method),
+					&format!("Can't {method} a dom that contains itself."),
 				);
 				return false;
 			}
@@ -106,7 +106,7 @@ impl Dom {
 					Dom::halt(
 						dom,
 						method,
-						&format!("Can't {} a dom that contains it's parent", method),
+						&format!("Can't {method} a dom that contains it's parent"),
 					);
 					return false;
 				}
@@ -363,7 +363,7 @@ impl INodeTrait for Rc<RefCell<Node>> {
 							reset_next_siblings_index(0, &nodes);
 						}
 						// set childs as new nodes
-						(*target.borrow_mut()).childs = if has_nodes { Some(nodes) } else { None };
+						target.borrow_mut().childs = if has_nodes { Some(nodes) } else { None };
 					} else if let Some(childs) = &mut target.borrow_mut().childs {
 						let index = self.index();
 						// not last node, whenever nodes is empty or not, reset next childs indexs
@@ -453,7 +453,7 @@ impl IElementTrait for Rc<RefCell<Node>> {
 			cur_type => Dom::halt(
 				self,
 				"tag_name",
-				&format!("The node type of '{:?}' doesn't have a tag name.", cur_type),
+				&format!("The node type of '{cur_type:?}' doesn't have a tag name."),
 			),
 		};
 		vec![]
@@ -919,7 +919,7 @@ impl IElementTrait for Rc<RefCell<Node>> {
 				Dom::halt(
 					self,
 					action,
-					&format!("Can't {} that not implemented 'Dom'", action),
+					&format!("Can't {action} that not implemented 'Dom'"),
 				);
 			}
 		}
@@ -986,7 +986,7 @@ impl IElementTrait for Rc<RefCell<Node>> {
 				Dom::halt(
 					self,
 					action,
-					&format!("Can't {} that not implemented 'Dom'", action),
+					&format!("Can't {action} that not implemented 'Dom'"),
 				);
 			}
 		}

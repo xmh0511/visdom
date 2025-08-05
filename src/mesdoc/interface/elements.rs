@@ -382,7 +382,7 @@ impl<'a> Elements<'a> {
 				// set prev parent
 				prev_parent = Some(parent);
 				// new parent
-				if parents_indexs.get(&indexs).is_none() {
+				if !parents_indexs.contains(&indexs) {
 					parents_indexs.insert(indexs);
 					uniques.push(ele.cloned());
 				}
@@ -3127,6 +3127,7 @@ impl<'a> Elements<'a> {
 
 		/// pub fn `texts_by`
 		/// get the text node of each element, filter by the handle
+		#[allow(clippy::type_complexity)]
 		pub fn texts_by(
 			&self,
 			limit_depth: usize,
@@ -3137,6 +3138,7 @@ impl<'a> Elements<'a> {
 
 		/// pub fn `texts_by_rec`
 		/// get the text node of each element, filter by the handle, and check if need recursive by the result of rec_handle with child element
+		#[allow(clippy::type_complexity)]
 		pub fn texts_by_rec(
 			&self,
 			limit_depth: usize,

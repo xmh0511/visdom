@@ -11,14 +11,13 @@ fn test_document_trait() -> Result {
     <!doctype html>
     <html>
       <head>
-        <title>{}</title>
+        <title>{page_title}</title>
       </head>
       <body>
         Visdom!
       </body>
     </html>
-  "#,
-		page_title
+  "#
 	);
 	let root = Vis::load(&html)?;
 	// get document
@@ -84,7 +83,7 @@ fn test_text_trait() -> Result {
 	// get all texts
 	let mut texts = id_content.texts(0);
 	assert_eq!(texts.length(), 2);
-	assert!(texts.get_ref().get(0).unwrap().text() == "Vis");
+	assert!(texts.get_ref().first().unwrap().text() == "Vis");
 	assert!(texts.get_ref().get(1).unwrap().text() == "dom");
 	// append text, prepend text
 	texts.for_each(|_, node| {
@@ -92,7 +91,7 @@ fn test_text_trait() -> Result {
 		node.append_text("$");
 		true
 	});
-	assert!(texts.get_ref().get(0).unwrap().text() == "^Vis$");
+	assert!(texts.get_ref().first().unwrap().text() == "^Vis$");
 	assert!(texts.get_ref().get(1).unwrap().text() == "^dom$");
 	// remove text
 	texts.remove();

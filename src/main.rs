@@ -1,9 +1,6 @@
 #![allow(clippy::unnecessary_wraps)]
-use std::thread;
-use std::time::SystemTime;
-use std::{collections::VecDeque, error::Error};
-use visdom::types::{BoxDynError, IDocumentTrait};
-use visdom::types::{BoxDynNode, INodeType};
+use visdom::types::BoxDynError;
+use visdom::types::INodeType;
 use visdom::Vis;
 
 fn main() -> Result<(), BoxDynError> {
@@ -306,6 +303,7 @@ fn main() -> Result<(), BoxDynError> {
 	// let div_no_has_p = divs.not(":has(p)");
 	// println!("div_no_has_p: {}", div_no_has_p.text());
 	let content = root.find("#content");
+	#[cfg(feature = "text")]
 	content.texts_by_rec(
 		0,
 		Box::new(|_, text_node| {
@@ -313,7 +311,7 @@ fn main() -> Result<(), BoxDynError> {
 			true
 		}),
 		Box::new(|ele| {
-			let tag_name = ele.tag_name();
+			let _tag_name = ele.tag_name();
 			true
 		}),
 	);
@@ -323,18 +321,22 @@ fn main() -> Result<(), BoxDynError> {
 			child.set_text("abc");
 		}
 	}
-	let pseduo_root = root.find(":root");
+	let _pseduo_root = root.find(":root");
 	let child_nodes = root.get(0).unwrap().child_nodes();
 	println!("{}", child_nodes[1].text_content());
 	println!("{}", content.html());
+  #[allow(unused_mut)]
 	let mut test_clone = root.find("#test_clone");
 	println!("test_clone:{:?}", test_clone.html());
-	let test_clone_new = test_clone.clone();
-	test_clone_new.find(".abc").set_text("哈哈哈");
-	println!("test_clone:{:?}", test_clone.html());
-	println!("test_clone_new:{:?}", test_clone_new.html());
-	test_clone_new.find(".abc").append_to(&mut test_clone);
-	println!("test_clone:{:?}", test_clone.html());
-	println!("test_clone_new:{:?}", test_clone_new.html());
+	#[cfg(any(feature = "insertion", feature = "destroy"))]
+	{
+		let test_clone_new = test_clone.clone();
+		test_clone_new.find(".abc").set_text("哈哈哈");
+		println!("test_clone:{:?}", test_clone.html());
+		println!("test_clone_new:{:?}", test_clone_new.html());
+		test_clone_new.find(".abc").append_to(&mut test_clone);
+		println!("test_clone:{:?}", test_clone.html());
+		println!("test_clone_new:{:?}", test_clone_new.html());
+	};
 	Ok(())
 }

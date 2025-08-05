@@ -135,9 +135,8 @@ fn test_clone() -> Result {
 	let html = format!(
 		r#"
   <h2>logo</h2>
-  {}
-  "#,
-		menu_html
+  {menu_html}
+  "#
 	);
 	let fragement = Vis::load(html)?;
 	let menu = fragement.find(">.menu");

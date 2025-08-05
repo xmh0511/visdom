@@ -342,8 +342,8 @@ fn make_asc_or_desc_nth_child(selector: &'static str, asc: bool) -> RuleDefItem 
 		PRIORITY,
 		Box::new(move |data: MatchedQueue| {
 			let nth_data = &data[2].data;
-			let n = nth_data.get("n").map(|s| s.clone());
-			let index = nth_data.get("index").map(|s| s.clone());
+			let n = nth_data.get("n").cloned();
+			let index = nth_data.get("index").cloned();
 			let handle = make_asc_or_desc_nth_child_handle(asc);
 			let specified_handle = if n.is_none() {
 				let index = nth_index_to_number(&index);
@@ -605,8 +605,8 @@ fn make_asc_or_desc_nth_of_type(selector: &'static str, asc: bool) -> RuleDefIte
 		PRIORITY,
 		Box::new(move |mut data: MatchedQueue| {
 			let nth_data = data.remove(2).data;
-			let n = nth_data.get("n").map(|s| s.clone());
-			let index = nth_data.get("index").map(|s| s.clone());
+			let n = nth_data.get("n").cloned();
+			let index = nth_data.get("index").cloned();
 			let specified_handle = if n.is_none() {
 				let index = nth_index_to_number(&index);
 				Some(make_asc_or_desc_nth_of_type_specified(asc, index))

@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use std::borrow::Cow;
 use std::sync::{Arc, Mutex};
-use std::{collections::HashMap, fmt::Debug, usize};
+use std::{collections::HashMap, fmt::Debug};
 
 pub type FromParamsFn = Box<dyn Fn(&str, &str) -> Result<BoxDynPattern, String> + Send + 'static>;
 lazy_static! {
@@ -23,6 +23,7 @@ pub type MatchedQueue = Vec<Matched>;
 pub struct Matched {
 	pub chars: Vec<char>,
 	pub ignore_chars: Option<usize>,
+	#[allow(dead_code)]
 	pub name: &'static str,
 	pub data: MatchedData,
 }
@@ -129,7 +130,7 @@ impl Pattern for Identity {
 	}
 	// from_str
 	fn from_params(s: &str, p: &str) -> Result<BoxDynPattern, String> {
-		check_params_return(&[s, p], || Box::new(Identity::default()))
+		check_params_return(&[s, p], || Box::new(Identity))
 	}
 }
 /// AttrKey
@@ -157,7 +158,7 @@ impl Pattern for AttrKey {
 	}
 	// from_params
 	fn from_params(s: &str, p: &str) -> Result<BoxDynPattern, String> {
-		check_params_return(&[s, p], || Box::new(AttrKey::default()))
+		check_params_return(&[s, p], || Box::new(AttrKey))
 	}
 }
 /// Spaces
@@ -182,7 +183,7 @@ impl Pattern for Spaces {
 	}
 	// from params
 	fn from_params(s: &str, p: &str) -> Result<BoxDynPattern, String> {
-		check_params_return(&[s, p], || Box::new(Spaces::default()))
+		check_params_return(&[s, p], || Box::new(Spaces))
 	}
 }
 
@@ -203,7 +204,7 @@ impl Pattern for Nth {
 		if let Some(v) = Pattern::matched(&rule, chars) {
 			let rule_data = v.data;
 			// when the group index 6,
-			let only_index = rule_data.get("6").is_some();
+			let only_index = rule_data.contains_key("6");
 			let index_keys = if only_index { ("6", "5") } else { ("4", "3") };
 			// set index
 			if let Some(index) = Nth::get_number(&rule_data, index_keys, None) {
@@ -242,7 +243,7 @@ impl Pattern for Nth {
 	}
 	// from params to pattern
 	fn from_params(s: &str, p: &str) -> Result<BoxDynPattern, String> {
-		check_params_return(&[s, p], || Box::new(Nth::default()))
+		check_params_return(&[s, p], || Box::new(Nth))
 	}
 }
 
@@ -316,7 +317,7 @@ impl Nth {
 			}
 			let start = start_loop as usize;
 			let end = end_loop as usize;
-			let mut allow_indexs = Vec::with_capacity((end - start + 1) as usize);
+			let mut allow_indexs = Vec::with_capacity(end - start + 1);
 			for i in start..=end {
 				let cur_index = (i as isize * n + index) as usize;
 				if cur_index < 1 {
@@ -354,7 +355,7 @@ impl<'a> Pattern for RegExp<'a> {
 	fn matched(&self, chars: &[char]) -> Option<Matched> {
 		let Self { context } = self;
 		let content = chars.iter().collect::<String>();
-		let rule = RegExp::get_rule(&context);
+		let rule = RegExp::get_rule(context);
 		if let Some(caps) = rule.captures(&content) {
 			let total_len = caps[0].chars().count();
 			let mut data = HashMap::with_capacity(caps.len() - 1);
@@ -385,7 +386,7 @@ impl<'a> Pattern for RegExp<'a> {
 
 impl<'a> RegExp<'a> {
 	pub fn get_rule(context: &str) -> Arc<Regex> {
-		let wrong_regex = format!("Wrong regex context '{}'", context);
+		let wrong_regex = format!("Wrong regex context '{context}'");
 		let last_context = String::from("^") + context;
 		let mut regexs = REGEXS.lock().unwrap();
 		if let Some(rule) = regexs.get(&last_context[..]) {
@@ -411,7 +412,7 @@ impl Pattern for NestedSelector {
 	}
 	// from params to pattern
 	fn from_params(s: &str, p: &str) -> Result<BoxDynPattern, String> {
-		check_params_return(&[s, p], || Box::new(NestedSelector::default()))
+		check_params_return(&[s, p], || Box::new(NestedSelector))
 	}
 	// set to be nested
 	fn is_nested(&self) -> bool {
@@ -472,7 +473,7 @@ pub fn check_params_return<F: Fn() -> BoxDynPattern>(
 				r.push_str(s);
 				r
 			});
-			return Err(format!("Unrecognized params '{}'", all_params));
+			return Err(format!("Unrecognized params '{all_params}'"));
 		}
 	}
 	Ok(cb())
@@ -537,7 +538,7 @@ mod tests {
 		let pat: Box<dyn Pattern> = Box::new(TestPattern);
 		assert!(!pat.is_nested());
 		assert!(pat.matched(&['a']).is_none());
-		assert!(format!("{:?}", pat).contains("Pattern"));
+		assert!(format!("{pat:?}").contains("Pattern"));
 		assert!(TestPattern::from_params("a", "").is_err());
 		add_pattern("test", Box::new(TestPattern::from_params));
 		add_pattern("test", Box::new(TestPattern::from_params));
@@ -566,6 +567,6 @@ mod tests {
 		let reg_exp: BoxDynPattern = Box::new(RegExp {
 			context: std::borrow::Cow::from("abc"),
 		});
-		assert!(format!("{:?}", reg_exp).contains("abc"));
+		assert!(format!("{reg_exp:?}").contains("abc"));
 	}
 }

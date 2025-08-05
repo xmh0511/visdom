@@ -21,7 +21,7 @@ pub fn init(rules: &mut Vec<RuleItem>) {
 						if !eles.is_empty() {
 							let first_ele = eles
 								.get_ref()
-								.get(0)
+								.first()
 								.expect("The elements must have at least one element.");
 							if let Some(doc) = &first_ele.owner_document() {
 								if let Some(id_element) = doc.get_element_by_id(&id) {

@@ -125,7 +125,7 @@ impl Selector {
 						if prev_in != PrevInSelector::Selector {
 							return Err(Error::InvalidSelector {
 								context: String::from(context),
-								reason: format!("Wrong empty selector before ',' at index  {}", index),
+								reason: format!("Wrong empty selector before ',' at index  {index}"),
 							});
 						}
 						Selector::add_group(&mut groups);
@@ -365,7 +365,7 @@ impl Selector {
 						let context = chars[index..].iter().collect::<String>();
 						return Err(Error::InvalidSelector {
 							context,
-							reason: format!("Nested selector parse error at index {}", index),
+							reason: format!("Nested selector parse error at index {index}"),
 						});
 					} else {
 						index += count;
