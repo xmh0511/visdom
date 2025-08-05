@@ -36,4 +36,7 @@ jobs:
           cargo test --features full --verbose $CARGO_OPTIONS
           mkdir coverage
           grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o coverage/lcov.info
-          bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
+      - name: Upload coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
