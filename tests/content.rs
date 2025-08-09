@@ -44,7 +44,7 @@ fn test_val() -> Result {
 	assert_eq!(root.find("input[name='novalue']").val().to_string(), "");
 	// ---- textarea ----
 	let textarea_content = r#"<div>This is the content in textarea</div>"#;
-	let html = format!("<textarea>{}</textarea>", textarea_content);
+	let html = format!("<textarea>{textarea_content}</textarea>");
 	let root = Vis::load(&html)?;
 	let textarea = root.children("textarea");
 	assert_eq!(textarea.val().to_string(), textarea_content);
@@ -184,7 +184,7 @@ fn test_set_html() -> Result {
 fn test_text_set_html() -> Result {
 	// text node
 	let text = "This is a test!";
-	let html = format!(r#"<div class="parent">{}</div>"#, text);
+	let html = format!(r#"<div class="parent">{text}</div>"#);
 	let root = Vis::load(&html)?;
 	let parent = root.children(".parent");
 	let mut texts = parent.texts(1);
@@ -235,7 +235,7 @@ fn test_set_text() -> Result {
 	assert!(parent.text().is_empty());
 	// script tag
 	let inner_script = "var a = 1;";
-	let html = format!(r#"<script>{}</script>"#, inner_script);
+	let html = format!(r#"<script>{inner_script}</script>"#);
 	let root = Vis::load(&html)?;
 	let mut script = root.find("script");
 	assert_eq!(script.length(), 1);
@@ -262,7 +262,7 @@ fn test_text_content() {}
 #[test]
 fn test_inner_html() -> Result {
 	let inner_html = "abc<span>def</span>ghj";
-	let code = format!("<div>{}</div>", inner_html);
+	let code = format!("<div>{inner_html}</div>");
 	let root = Vis::load(&code)?;
 	assert_eq!(root.find("div").get(0).unwrap().html(), inner_html);
 	assert_eq!(root.find("div").html(), inner_html);
@@ -273,12 +273,12 @@ fn test_inner_html() -> Result {
 #[test]
 fn test_inner_htmls() -> Result {
 	let inner_html = "abc<span>def</span>ghj";
-	let code = format!("<div>{}</div><div>{}</div>", inner_html, inner_html);
+	let code = format!("<div>{inner_html}</div><div>{inner_html}</div>");
 	let root = Vis::load(&code)?;
 	assert_eq!(root.find("div").eq(0).htmls(), inner_html);
 	assert_eq!(
 		root.find("div").htmls(),
-		format!("{}{}", inner_html, inner_html)
+		format!("{inner_html}{inner_html}")
 	);
 	assert_eq!(root.find("p").htmls(), "");
 	Ok(())
@@ -287,7 +287,7 @@ fn test_inner_htmls() -> Result {
 #[test]
 fn test_outer_html() -> Result {
 	let inner_html = "abc<span>def</span>ghj";
-	let code = format!("<div>{}</div>", inner_html);
+	let code = format!("<div>{inner_html}</div>");
 	let root = Vis::load(&code)?;
 	assert_eq!(root.find("div").get(0).unwrap().outer_html(), code);
 	assert_eq!(root.find("div").outer_html(), code);
@@ -298,11 +298,11 @@ fn test_outer_html() -> Result {
 #[test]
 fn test_outer_htmls() -> Result {
 	let inner_html = "abc<span>def</span>ghj";
-	let code = format!("<div>{}</div><div>{}</div>", inner_html, inner_html);
+	let code = format!("<div>{inner_html}</div><div>{inner_html}</div>");
 	let root = Vis::load(&code)?;
 	assert_eq!(
 		root.find("div").eq(0).outer_htmls(),
-		format!("<div>{}</div>", inner_html)
+		format!("<div>{inner_html}</div>")
 	);
 	assert_eq!(root.find("div").outer_htmls(), code);
 	assert_eq!(root.find("p").outer_htmls(), "");

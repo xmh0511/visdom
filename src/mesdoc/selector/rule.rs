@@ -43,7 +43,7 @@ impl fmt::Debug for Matcher {
 
 impl Matcher {
 	// apply all elements
-	pub fn apply<'a, 'r>(&self, eles: &'a Elements<'r>, use_cache: Option<bool>) -> Elements<'r> {
+	pub fn apply<'r>(&self, eles: &Elements<'r>, use_cache: Option<bool>) -> Elements<'r> {
 		if let Some(handle) = &self.all_handle {
 			return handle(eles, use_cache);
 		}
@@ -367,14 +367,14 @@ mod tests {
 	#[test]
 	fn test_allow_debug() {
 		let matcher: Matcher = Default::default();
-		assert!(format!("{:?}", matcher).contains("Matcher"));
+		assert!(format!("{matcher:?}").contains("Matcher"));
 		let rule: Rule = Rule {
 			in_cache: false,
 			priority: 1,
 			queues: vec![],
 			handle: Box::new(|_| Default::default()),
 		};
-		assert!(format!("{:?}", rule).contains("Rule"));
+		assert!(format!("{rule:?}").contains("Rule"));
 	}
 
 	#[test]

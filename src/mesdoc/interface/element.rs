@@ -3,6 +3,7 @@ cfg_feat_text! {
 }
 use super::{BoxDynNode, BoxDynText, Elements, INodeTrait, INodeType};
 use crate::mesdoc::error::{BoxDynError, Error as IError};
+use std::fmt::Display;
 use std::ops::Range;
 
 pub type BoxDynElement<'a> = Box<dyn IElementTrait + 'a>;
@@ -35,12 +36,12 @@ impl IAttrValue {
 	}
 }
 
-/// impl `ToString` for IAttrValue
-impl ToString for IAttrValue {
-	fn to_string(&self) -> String {
+/// impl `Display` for IAttrValue
+impl Display for IAttrValue {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			IAttrValue::Value(v, _) => v.clone(),
-			IAttrValue::True => String::new(),
+			IAttrValue::Value(v, _) => write!(f, "{v}"),
+			IAttrValue::True => write!(f, ""),
 		}
 	}
 }
@@ -52,11 +53,11 @@ pub enum IFormValue {
 	Multiple(Vec<String>),
 }
 
-impl ToString for IFormValue {
-	fn to_string(&self) -> String {
+impl Display for IFormValue {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			IFormValue::Single(v) => v.clone(),
-			IFormValue::Multiple(v) => v.join(","),
+			IFormValue::Single(v) => write!(f, "{v}"),
+			IFormValue::Multiple(v) => write!(f, "{}", v.join(",")),
 		}
 	}
 }
@@ -261,6 +262,7 @@ pub trait IElementTrait: INodeTrait {
 	// element child nodes
 	fn child_nodes_length(&self) -> usize;
 	fn child_nodes_item<'b>(&self, index: usize) -> Option<BoxDynNode<'b>>;
+	#[allow(clippy::type_complexity)]
 	fn child_nodes_item_since_by<'a>(
 		&'a self,
 		node_index: usize,
@@ -293,6 +295,7 @@ pub trait IElementTrait: INodeTrait {
 		}
 		result
 	}
+	#[allow(clippy::type_complexity)]
 	fn children_by<'a>(&'a self, matcher: Box<dyn FnMut(&dyn IElementTrait) + 'a>);
 	// attribute
 	fn get_attribute(&self, name: &str) -> Option<IAttrValue>;
@@ -360,7 +363,7 @@ mod tests {
 	fn test_i_attr_value() {
 		// string value
 		let attr_value = IAttrValue::Value("Hello".into(), None);
-		assert!(format!("{:?}", attr_value).contains("Hello"));
+		assert!(format!("{attr_value:?}").contains("Hello"));
 		assert!(attr_value.is_str("Hello"));
 		assert!(!attr_value.is_true());
 		assert_eq!(attr_value.to_list(), vec!["Hello"]);

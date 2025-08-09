@@ -1,47 +1,42 @@
 name: test
 on:
-  - push
+  push:
+
 jobs:
-  # Task test
   test:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      # Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v3
-      # Install toolchain
-      - name: Install toolchain
+      - name: Install Rust stable toolchain
         uses: dtolnay/rust-toolchain@stable
-      # build coverage
       - name: Run unit tests
         run: cargo test --features full
-  # Task coverage
+
   coverage:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
-      # Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v3
-      # Install toolchain
-      - name: Install toolchain
-        uses: dtolnay/rust-toolchain@nightly
-      # Install grcov
+      - name: Install Rust stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install llvm-tools
+        run: rustup component add llvm-tools-preview
       - name: Install grcov
-        run: curl -L https://github.com/mozilla/grcov/releases/download/v0.8.2/grcov-linux-x86_64.tar.bz2 | tar jxf -
-      # Run coverage
-      - name: Build coverage
+        run: cargo install grcov
+      - name: Build and test with coverage instrumentation
         run: |
           export CARGO_INCREMENTAL=0
-          export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
-          export RUSTDOCFLAGS="-Cpanic=abort"
+          export RUSTFLAGS="-C instrument-coverage"
+          export LLVM_PROFILE_FILE="cargo-test-%p-%m.profraw"
           cargo build --features full --verbose $CARGO_OPTIONS
           cargo test --features full --verbose $CARGO_OPTIONS
-          zip -0 ccov.zip `find . \( -name "visdom*.gc*" \) -print`;
-          ./grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info;
-          bash <(curl -s https://codecov.io/bash) -f lcov.info;
+          mkdir coverage
+          grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o coverage/lcov.info
+      - name: Upload coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
