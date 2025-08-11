@@ -54,7 +54,7 @@ pub trait INodeTrait {
 	fn parent<'b>(&self) -> MaybeElement<'b>;
 
 	// owner document
-	fn owner_document(&self) -> MaybeDoc;
+	fn owner_document(&self) -> MaybeDoc<'_>;
 	// root element
 	fn root_element<'b>(&self) -> Option<BoxDynElement<'b>> {
 		if let Some(doc) = &self.owner_document() {

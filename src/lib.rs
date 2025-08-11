@@ -209,7 +209,7 @@ impl INodeTrait for Rc<RefCell<Node>> {
 	}
 
 	/// impl `owner_document`
-	fn owner_document(&self) -> MaybeDoc {
+	fn owner_document(&self) -> MaybeDoc<'_> {
 		if let Some(root) = &self.borrow().root {
 			if let Some(root) = &root.upgrade() {
 				if let Some(doc) = &root.borrow().document {

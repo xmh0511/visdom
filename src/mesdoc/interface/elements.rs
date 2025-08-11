@@ -348,7 +348,7 @@ impl<'a> Elements<'a> {
 	///   Ok(())
 	/// }
 	/// ```
-	pub fn document(&self) -> MaybeDoc {
+	pub fn document(&self) -> MaybeDoc<'_> {
 		for ele in self.get_ref() {
 			if let Some(doc) = ele.owner_document() {
 				return Some(doc);
