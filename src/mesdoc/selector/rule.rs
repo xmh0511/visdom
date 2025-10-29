@@ -11,8 +11,8 @@ lazy_static! {
 	pub static ref RULES: Mutex<Vec<(&'static str, Arc<Rule>)>> = Mutex::new(Vec::with_capacity(20));
 }
 // matcher handles
-pub type MatchAllHandle = Box<dyn (for<'a, 'r> Fn(&'a Elements<'r>, Option<bool>) -> Elements<'r>)>;
-pub type MatchOneHandle = Box<dyn (Fn(&dyn IElementTrait, Option<bool>) -> bool)>;
+pub type MatchAllHandle = Box<dyn for<'a, 'r> Fn(&'a Elements<'r>, Option<bool>) -> Elements<'r>>;
+pub type MatchOneHandle = Box<dyn Fn(&dyn IElementTrait, Option<bool>) -> bool>;
 pub type MatchSpecifiedHandle =
 	Box<dyn for<'a> Fn(&'a dyn IElementTrait, Box<dyn FnMut(&dyn IElementTrait, bool, bool) + 'a>)>;
 // matcher factory
