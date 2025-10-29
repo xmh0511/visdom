@@ -2,6 +2,18 @@
 
 0.2.1 版本后各个接口方法已经基本趋于稳定，后面将不会做大的调整。
 
+## [1.0.4] - 2025-10-29
+
+### 优化
+
+- 优化代码 clippy 检测及 workflow 工作流，感谢 @xmh0511 提交的 PR [#25](https://github.com/fefit/visdom/pull/25)
+
+## [1.0.3] - 2025-03-17
+
+### 修复
+
+- 修复依赖的 rphtml 遇到部分异常文档解析出现错误直接 panic 的情况，Issue [#24](https://github.com/fefit/visdom/issues/24)
+
 ## [1.0.2] - 2024-10-27
 
 ### 新增
