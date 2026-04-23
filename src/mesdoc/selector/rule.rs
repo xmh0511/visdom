@@ -47,7 +47,10 @@ impl Matcher {
 		if let Some(handle) = &self.all_handle {
 			return handle(eles, use_cache);
 		}
-		let handle = self.one_handle.as_ref().unwrap();
+		let handle = self
+			.one_handle
+			.as_ref()
+			.expect("Matcher must have either all_handle or one_handle");
 		let mut result = Elements::with_capacity(5);
 		for ele in eles.get_ref() {
 			if handle(&**ele, use_cache) {
