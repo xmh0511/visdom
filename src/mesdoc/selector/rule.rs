@@ -139,12 +139,7 @@ impl Rule {
 		let mut index: usize = 0;
 		for ch in content.chars() {
 			index += 1;
-			let is_prev_matched_finish = if is_matched_finish {
-				is_matched_finish = false;
-				true
-			} else {
-				false
-			};
+			let is_prev_matched_finish = std::mem::take(&mut is_matched_finish);
 			if store.is_wait_end {
 				if ch.is_ascii_whitespace() {
 					continue;

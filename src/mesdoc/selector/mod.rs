@@ -222,7 +222,7 @@ impl Selector {
 		for mut group in groups {
 			// first optimize the chain selectors, the rule who's priority is bigger will apply first
 			let mut max_index: usize = 0;
-			let mut max_priority: u32 = 0;
+			const MAX_PRIORITY: u32 = 0;
 			for (index, r) in group.iter_mut().enumerate() {
 				let mut total_priority = 0;
 				if r.len() > 1 {
@@ -240,11 +240,11 @@ impl Selector {
 				}
 				if use_lookup {
 					total_priority = r.iter().map(|p| p.0.priority).sum();
-					if total_priority > max_priority {
-						max_priority = total_priority;
+					if total_priority > MAX_PRIORITY {
 						max_index = index;
 					}
 				}
+				_ = total_priority;
 			}
 			// if the first combinator is child, and the max_index > 1, use the max_index's rule first
 			if use_lookup && max_index > 0 {
