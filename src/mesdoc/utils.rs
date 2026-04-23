@@ -224,6 +224,7 @@ fn contains_chars_nocheck(target: &[char], search: &[char], t_len: usize, s_len:
 				continue;
 			}
 			move_one = true;
+			break;
 		}
 		if !move_one {
 			return true;

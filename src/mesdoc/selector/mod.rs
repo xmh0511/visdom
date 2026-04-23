@@ -224,28 +224,25 @@ impl Selector {
 			let mut max_index: usize = 0;
 			let mut max_priority: u32 = 0;
 			for (index, r) in group.iter_mut().enumerate() {
-				let mut total_priority = 0;
-				if r.len() > 1 {
-					let chain_comb = r[0].1;
-					r.sort_by(|a, b| b.0.priority.partial_cmp(&a.0.priority).unwrap());
-					let now_first = &mut r[0];
-					if now_first.1 != chain_comb {
-						now_first.1 = chain_comb;
-						total_priority += now_first.0.priority;
-						for n in &mut r[1..] {
-							n.1 = Combinator::Chain;
-							total_priority += n.0.priority;
-						}
-					}
-				}
-				if use_lookup {
-					total_priority = r.iter().map(|p| p.0.priority).sum();
-					if total_priority > max_priority {
-						max_priority = total_priority;
-						max_index = index;
+			if r.len() > 1 {
+				let chain_comb = r[0].1;
+				r.sort_by(|a, b| b.0.priority.cmp(&a.0.priority));
+				let now_first = &mut r[0];
+				if now_first.1 != chain_comb {
+					now_first.1 = chain_comb;
+					for n in &mut r[1..] {
+						n.1 = Combinator::Chain;
 					}
 				}
 			}
+			if use_lookup {
+				let total_priority: u32 = r.iter().map(|p| p.0.priority).sum();
+				if total_priority > max_priority {
+					max_priority = total_priority;
+					max_index = index;
+				}
+			}
+		}
 			// if the first combinator is child, and the max_index > 1, use the max_index's rule first
 			if use_lookup && max_index > 0 {
 				let is_child = matches!(

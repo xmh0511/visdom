@@ -45,6 +45,9 @@ pub trait Pattern: Send + Sync + Debug {
 
 impl Pattern for char {
 	fn matched(&self, chars: &[char]) -> Option<Matched> {
+		if chars.is_empty() {
+			return None;
+		}
 		let ch = chars[0];
 		if *self == ch {
 			return Some(Matched {
@@ -92,6 +95,9 @@ pub struct Identity;
 
 impl Pattern for Identity {
 	fn matched(&self, chars: &[char]) -> Option<Matched> {
+		if chars.is_empty() {
+			return None;
+		}
 		let mut result: Vec<char> = Vec::with_capacity(5);
 		let first = chars[0];
 		let name: &str = "identity";
