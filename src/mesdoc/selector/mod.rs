@@ -226,6 +226,7 @@ impl Selector {
 			for (index, r) in group.iter_mut().enumerate() {
 				if r.len() > 1 {
 					let chain_comb = r[0].1;
+					#[allow(clippy::unnecessary_sort_by)]
 					r.sort_by(|a, b| b.0.priority.cmp(&a.0.priority));
 					let now_first = &mut r[0];
 					if now_first.1 != chain_comb {
