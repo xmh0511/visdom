@@ -275,10 +275,16 @@ impl Nth {
 	) -> Vec<usize> {
 		// has n
 		if let Some(n) = n {
-			let n = n.parse::<isize>().expect("nth 'n' value must be a valid integer");
+			let n = n
+				.parse::<isize>()
+				.expect("nth 'n' value must be a valid integer");
 			let index = index
 				.as_ref()
-				.map(|index| index.parse::<isize>().expect("nth 'index' value must be a valid integer"))
+				.map(|index| {
+					index
+						.parse::<isize>()
+						.expect("nth 'index' value must be a valid integer")
+				})
 				.unwrap_or(0);
 			// n == 0
 			if n == 0 {
